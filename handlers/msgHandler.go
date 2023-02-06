@@ -6,8 +6,9 @@ import (
 	"wechatbot/config"
 	"wechatbot/module/coin"
 	l "wechatbot/module/log"
-	"go.uber.org/zap"
 	"wechatbot/utils"
+
+	"go.uber.org/zap"
 
 	"github.com/eatmoreapple/openwechat"
 )
@@ -46,9 +47,9 @@ func Handler(msg *openwechat.Message) {
 	// 处理群消息
 	if msg.IsSendByGroup() {
 		err := handlers[GroupHandler].handler(msg)
-		if err!=nil{
+		if err != nil {
 			l.LOG.Error("", zap.Error(err))
-			msg.ReplyText("发生错误了：\n"+err.Error())
+			msg.ReplyText("发生错误了：\n" + err.Error())
 		}
 		return
 	}
@@ -65,9 +66,9 @@ func Handler(msg *openwechat.Message) {
 
 	// 私聊
 	err := handlers[UserHandler].handler(msg)
-	if err!=nil{
+	if err != nil {
 		l.LOG.Error("", zap.Error(err))
-		msg.ReplyText("发生错误了：\n"+err.Error())
+		msg.ReplyText("发生错误了：\n" + err.Error())
 	}
 }
 func dealErr(err error, msg string) {

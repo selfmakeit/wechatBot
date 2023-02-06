@@ -46,9 +46,9 @@ func (g *GroupMessageHandler) handler(msg *openwechat.Message) error {
 				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.GPTPrefix) {
 					return g.ReplyText(msg, gptType)
 				}
-			} /* else {
+			} else {
 				return g.ReplyText(msg, gptType)
-			} */
+			}
 		}
 	} else {
 		if msg.IsPaiYiPai() {
