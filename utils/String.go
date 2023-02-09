@@ -37,7 +37,7 @@ func TrimAllSpace(src string) (dist string) {
 	if len(src) == 0 {
 		return
 	}
-
+	// fmt.Println("ori--->",src)
 	r, distR := []rune(src), []rune{}
 	for i := 0; i < len(r); i++ {
 		/*
@@ -45,7 +45,7 @@ func TrimAllSpace(src string) (dist string) {
 			32 空格
 			8197 中文空格
 		*/
-
+		// fmt.Println(r[i])
 		if r[i] == 8197 || r[i] == 32 {
 			continue
 		}
@@ -94,7 +94,7 @@ func TrimAllSpaceAndEnter(src string) (dist string) {
 			32 空格
 			8197 中文空格
 		*/
-		if r[i] == 8197 || r[i] == 32 || r[i] == 10 || r[i] == 9 || r[i] == 9 {
+		if r[i] == 8197 || r[i] == 32 || r[i] == 10 || r[i] == 9 {
 			continue
 		}
 

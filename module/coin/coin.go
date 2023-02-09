@@ -119,7 +119,11 @@ func (g *Gecko) UpdateCoinList() {
 	// }
 	g.ListUpdateAt = time.Now()
 }
-
+/*
+根据symbol获取id
+symbol：eth
+id :ethereum
+*/
 func (g *Gecko) GetCoinId(symbol string) (string, error) {
 	if g.CoinList == nil || len(g.CoinList) == 0 {
 		return "", errors.New("Coin List Not Update")
@@ -133,6 +137,25 @@ func (g *Gecko) GetCoinId(symbol string) (string, error) {
 		}
 	}
 	return "", fmt.Errorf("symbol not in the token list,you provided symbol:[%v]", symbol)
+}
+/*
+根据id获取symbol
+symbol：eth
+id :ethereum
+*/
+func (g *Gecko) GetCoinSymbol(id string) (string, error) {
+	if g.CoinList == nil || len(g.CoinList) == 0 {
+		return "", errors.New("Coin List Not Update")
+	}
+	// find the id
+	for _, token := range g.CoinList {
+		//ignore case
+		if strings.EqualFold(token.ID, id) {
+			// fmt.Printf("find coin==>ID:%v,Symbol:%v,Name:%v", token.ID, token.Symbol, token.Name)
+			return token.Symbol, nil
+		}
+	}
+	return "", fmt.Errorf("id not in the token list,you provided id:[%v]", id)
 }
 func (g *Gecko) GetCoinMsgBySymbol(symbol string) (*Coin, error) {
 	if g.CoinList == nil || len(g.CoinList) == 0 {
@@ -172,7 +195,40 @@ func (g *Gecko) GetCoinIdByNetWork(symbol string, network string) (string, error
 	}
 	return "", fmt.Errorf("symbol not in the token list,you provided symbol:[%v]", symbol)
 }
-
+/**
+币价格推送
+*/
+func (g *Gecko) CoinPushToWechat()(string ,error) {
+	params := url.Values{}
+	params.Add("ids", "ethereum,apecoin,solana,aptos,near,arweave,filecoin")
+	params.Add("vs_currencies", "usd")
+	url := fmt.Sprintf("%s/simple/price?%s", baseURL, params.Encode())
+	if g.ApiKey != "" {
+		url = fmt.Sprintf("%s/simple/price?x_cg_pro_api_key=%s&%s", baseURL, g.ApiKey, params.Encode())
+	}
+	resp, err := g.MakeReq(url)
+	if err != nil {
+		return "", err
+	}
+	var v map[string]map[string]decimal.Decimal
+	err = json.Unmarshal(resp, &v)
+	if err != nil {
+		return "", err
+	}
+	
+	if len(v) == 0 {
+		return "", fmt.Errorf("id or currency not existed caontained in watch list")
+	}
+	var msg ="watch list:\n\n"
+	for i, token := range v {
+		for _, price := range token {
+			sym,_ :=g.GetCoinSymbol(i)
+			msg += sym+"("+i+")" +" : $"+price.String()+"\n"
+		}
+	}
+	msg += "\n(每天早上9点和晚10点推送)"
+	return msg, nil
+}
 /*
 example:
 

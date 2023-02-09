@@ -8,6 +8,8 @@ import (
 	"time"
 	"wechatbot/config"
 	"wechatbot/module/coin"
+	"wechatbot/module/stock"
+	"wechatbot/module/flash"
 	. "wechatbot/module/redis"
 	"wechatbot/utils"
 
@@ -17,8 +19,18 @@ import (
 )
 
 func main() {
-
-	getChieseEnter()
+	res := flash.FClien.GetFlashNews()
+	s := formatNews(res)
+	fmt.Println("----->",s)
+	// res,_ := coin.GekClient.CoinPushToWechat()
+	// fmt.Println(res)
+	// res := stock.SClien.GetStockData("microsoft")
+	// reply := formatStockMsg(res)
+	// fmt.Println(reply)
+	// res2 := stock.SClien.GetStockNews("apple")
+	// reply2 := formatStockNewsMsg(res2)
+	// fmt.Println(reply2)
+	// getChieseEnter()
 	// id := "23323"
 	// testgpt("java写一个快速排序算法", id)
 	// time.Sleep(time.Second * 3)
@@ -42,6 +54,49 @@ func main() {
 	// }
 	// fmt.Println("value-->",v)
 
+}
+func formatNews(news *flash.FlashNews)string{
+	if news ==nil{
+		return ""
+	}
+	var msg =news.Date+"\n"
+	for i,v := range *news.News{
+		ss := strings.ReplaceAll(v.Summary, "[原文链接]", "")
+		ss = strings.ReplaceAll(ss, "\n", "")
+		msg += strconv.Itoa(i+1)+". "+v.Title+":\n"+"  "+ss+"\n\n"
+	}
+	return msg
+
+}
+func formatStockMsg(st *stock.StockKeyStat)string{
+	if st ==nil{
+		return ""
+	}
+	var msg = fmt.Sprintf(
+		`
+股票名称 : %v
+当前市值 : %v
+当前价格 : %v
+交易额  : %v
+上次收盘价 : %v
+当日价格波动 : %v
+年度波幅 : %v
+涨跌百分比 : %v`,st.Name,st.MarketCap,st.Price,st.Volume,st.PreviousClose,st.DayRange,st.YearRange,st.ChangePercent)
+	return msg
+}
+func formatStockNewsMsg(st *[]stock.StockNews)string{
+	if st ==nil{
+		return ""
+	}
+	var msg =``
+	for i, item := range *st{
+		msg += fmt.Sprintf(
+			`
+%v. %v:
+标题： %v
+链接: %v`,i+1,item.Source,item.Title,item.ArticleLink)
+	}
+	return msg
 }
 func testgg() {
 	fmt.Println("dur>>>>", config.GlobalConfig.ConversationExpire)
@@ -149,7 +204,7 @@ func testGecko() {
 	// d1, _ := client.GetCoinPriceById("apecoin", "cny")
 	// d2, _ := client.GetChainTokenPrice("ethereum", "cny")
 	// d3, _ := client.GetChainTokenPrice("ethereum", "usd")
-	d4, _ := client.SimpleCoinMarket("usd", "ethereum")
+	d4, _ := client.SimpleCoinMarketBySymbol("usd", "ethereum")
 	// fmt.Println("price->", d)
 	// fmt.Println("price->", d1)
 	// fmt.Println("price->", d2)

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"wechatbot/config"
 	"wechatbot/module/coin"
+	"wechatbot/module/stock"
 	l "wechatbot/module/log"
 	"wechatbot/utils"
 
@@ -25,6 +26,8 @@ var (
 	gptType     int16 = 1
 	coinType    int16 = 2
 	coinMsgType int16 = 3
+	stockType 		int16 = 4
+	stockNewsType   int16 = 5
 )
 
 const (
@@ -73,6 +76,38 @@ func Handler(msg *openwechat.Message) {
 }
 func dealErr(err error, msg string) {
 
+}
+func formatStockMsg(st *stock.StockKeyStat)string{
+	if st ==nil{
+		return ""
+	}
+	var msg = fmt.Sprintf(
+		`
+股票名称 : %v
+当前市值 : %v
+当前价格 : %v
+交易额  : %v
+上次收盘价 : %v
+当日价格波动 : %v
+年度波幅 : %v
+涨跌百分比 : %v
+主要交易所 : %v
+`,st.Name,st.MarketCap,st.Price,st.Volume,st.PreviousClose,st.DayRange,st.YearRange,st.ChangePercent,st.PrimaryExchange)
+	return msg
+}
+func formatStockNewsMsg(st *[]stock.StockNews)string{
+	if st ==nil{
+		return ""
+	}
+	var msg =``
+	for i, item := range *st{
+		msg += fmt.Sprintf(
+			`
+%v. %v:
+标题： %v
+链接: %v`,i+1,item.Source,item.Title,item.ArticleLink)
+	}
+	return msg
 }
 func formatCoinMsg(coin *coin.CoinsMarketItem) string {
 	if coin == nil {

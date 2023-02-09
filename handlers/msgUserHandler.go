@@ -3,10 +3,11 @@ package handlers
 import (
 	"fmt"
 	"strings"
-
+"time"
 	"wechatbot/config"
 	"wechatbot/module/coin"
 	"wechatbot/module/gpt"
+	"wechatbot/module/stock"
 
 	// ."wechatbot/module/redis"
 	l "wechatbot/module/log"
@@ -45,7 +46,17 @@ func (g *UserMessageHandler) handler(msg *openwechat.Message) error {
 				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.GPTPrefix) {
 					return g.ReplyText(msg, gptType)
 				}
-			} else {
+			}else if utils.ContainsIgnoreCase(message, config.GlobalConfig.StockNewsPrefix) {
+				s, err := utils.SubStringBetween(message, 0, len(config.GlobalConfig.StockNewsPrefix))
+				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.StockNewsPrefix) {
+					return g.ReplyText(msg, stockNewsType)
+				}
+			}else if utils.ContainsIgnoreCase(message, config.GlobalConfig.StockPrefix) {
+				s, err := utils.SubStringBetween(message, 0, len(config.GlobalConfig.StockPrefix))
+				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.StockPrefix) {
+					return g.ReplyText(msg, stockType)
+				}
+			}else {
 				return g.ReplyText(msg, gptType)
 			}
 		} else if msg.IsPaiYiPai() {
@@ -89,6 +100,10 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message, msgType int16) e
 			_, _ = msg.ReplyText("请在 /price后面加上代币符号\n比如/price ETH\n" + config.GlobalConfig.MsgSuffix)
 		case coinMsgType:
 			_, _ = msg.ReplyText("请在 /coin后面加上代币符号\n比如/coin ETH\n" + config.GlobalConfig.MsgSuffix)
+		case stockNewsType:
+			_, _ = msg.ReplyText("请在 /news后面加上代币符号\n比如/news apple\n" + config.GlobalConfig.MsgSuffix)
+		case stockType:
+			_, _ = msg.ReplyText("请在 /stock后面加上代币符号\n比如/stock tesla\n" + config.GlobalConfig.MsgSuffix)
 		}
 		return nil
 	}
@@ -132,10 +147,25 @@ func (g *UserMessageHandler) ReplyText(msg *openwechat.Message, msgType int16) e
 			return fmt.Errorf("get coin price error: %v", err)
 		}
 		reply = formatCoinMsg(msg)
+	case stockNewsType:
+		requestText = utils.TrimAllSpace(requestText)
+		fmt.Println(requestText)
+		for i :=0;i<5;i++{//经常出问题，请求多次
+			res := stock.SClien.GetStockNews(requestText)
+			reply = formatStockNewsMsg(res)
+			if reply !=""{
+				break
+			}else{
+				time.Sleep(time.Microsecond*200)
+			}
+		}
+	case stockType:
+		requestText = utils.TrimAllSpace(requestText)
+		res := stock.SClien.GetStockData(requestText)
+		reply = formatStockMsg(res)
 	}
 
 	// reply, err := gpt.Completions(requestText)
-
 	if reply == "" {
 		_, err = msg.ReplyText("我也不知道[尴尬]" + config.GlobalConfig.MsgSuffix)
 		if err != nil {
@@ -162,6 +192,10 @@ func createPrvReplyContent(request string, content string, msgType int16) string
 
 	case coinMsgType:
 		re = "代币" + request + "信息(单位：美元):\n\n" + content + config.GlobalConfig.MsgSuffix
+	case stockType:
+		re = "股票" + request + "信息:\n\n" + content + config.GlobalConfig.MsgSuffix
+	case stockNewsType:
+		re = request + "热门新闻:\n\n" + content + config.GlobalConfig.MsgSuffix
 	}
 	return re
 }
@@ -180,15 +214,19 @@ func getPrvReqText(msg *openwechat.Message, msgyType int16) string {
 	default:
 		content := utils.TrimAllSpace(msg.Content)
 		//这种方式不区分
-		replaceCoinPrice, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.CoinPricePrefix))
-		replaceCoinMsg, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.CoinMsgPrefix))
-		replaceGas, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.GasPrefix))
+		// replaceCoinPrice, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.CoinPricePrefix))
+		// replaceCoinMsg, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.CoinMsgPrefix))
+		// replaceGas, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.GasPrefix))
+		// replaceNews, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.StockNewsPrefix))
+		// replaceStock, _ := utils.SubStringBetween(content, 0, len(config.GlobalConfig.StockPrefix))
 
 		// content :=strings.TrimSpace(msg.Content)
 		content = strings.Trim(content, "\n") //去除回车
-		textContent = strings.ReplaceAll(content, replaceCoinPrice, "")
-		textContent = strings.ReplaceAll(textContent, replaceCoinMsg, "")
-		textContent = strings.ReplaceAll(textContent, replaceGas, "")
+		textContent = strings.ReplaceAll(content, config.GlobalConfig.CoinPricePrefix, "")
+		textContent = strings.ReplaceAll(textContent, config.GlobalConfig.CoinMsgPrefix, "")
+		textContent = strings.ReplaceAll(textContent, config.GlobalConfig.GasPrefix, "")
+		textContent = strings.ReplaceAll(textContent, config.GlobalConfig.StockNewsPrefix, "")
+		textContent = strings.ReplaceAll(textContent, config.GlobalConfig.StockPrefix, "")
 	}
 	return textContent
 }

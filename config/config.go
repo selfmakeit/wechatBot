@@ -28,6 +28,8 @@ type Configuration struct {
 	CoinMsgPrefix   string `json:"CoinMsgPrefix"`
 	CoinPricePrefix string `json:"CoinPricePrefix"`
 	GasPrefix       string `json:"GasPrefix"`
+	StockNewsPrefix string `json:"StockNewsPrefix"`
+	StockPrefix     string `json:"StockPrefix"`
 	//用户过滤设置
 	SkipSelf     bool   `json:"SkipSelf"`     //过滤自己发的消息，自己的消息不触发
 	OnlySelf     bool   `json:"OnlySelf"`     //过滤别人发的消息，只触发自己发的消息
@@ -61,8 +63,6 @@ var file_locker sync.Mutex
 
 func init() {
 	loadConfig()
-	// initGeckoClient()
-	// initCoinList()
 }
 
 // LoadConfig 加载配置

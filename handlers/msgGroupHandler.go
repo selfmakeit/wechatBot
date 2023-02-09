@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"time"
 	"fmt"
 	// "log"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"wechatbot/module/coin"
 	"wechatbot/module/gpt"
 	l "wechatbot/module/log"
+	"wechatbot/module/stock"
 	"wechatbot/utils"
 
 	"github.com/eatmoreapple/openwechat"
@@ -46,14 +48,24 @@ func (g *GroupMessageHandler) handler(msg *openwechat.Message) error {
 				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.GPTPrefix) {
 					return g.ReplyText(msg, gptType)
 				}
+			} else if utils.ContainsIgnoreCase(textContent, config.GlobalConfig.StockNewsPrefix) {
+				s, err := utils.SubStringBetween(textContent, 0, len(config.GlobalConfig.StockNewsPrefix))
+				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.StockNewsPrefix) {
+					return g.ReplyText(msg, stockNewsType)
+				}
+			} else if utils.ContainsIgnoreCase(textContent, config.GlobalConfig.StockPrefix) {
+				s, err := utils.SubStringBetween(textContent, 0, len(config.GlobalConfig.StockPrefix))
+				if err == nil && utils.ContainsIgnoreCase(s, config.GlobalConfig.StockPrefix) {
+					return g.ReplyText(msg, stockType)
+				}
 			} else {
 				return g.ReplyText(msg, gptType)
 			}
 		}
 	} else {
 		if msg.IsPaiYiPai() {
-			_, err := msg.ReplyText("咋啦")
-			return err
+			// _, err := msg.ReplyText("咋啦")
+			// return err
 		}
 	}
 	return nil
@@ -121,6 +133,19 @@ func (g *GroupMessageHandler) ReplyText(msg *openwechat.Message, msgType int16) 
 			return fmt.Errorf("get coin message error: %v", err)
 		}
 		reply = formatCoinMsg(msg)
+	case stockNewsType:
+		for i := 0; i < 5; i++ { //经常出问题，请求多次
+			res := stock.SClien.GetStockNews(req)
+			reply = formatStockNewsMsg(res)
+			if reply != "" {
+				break
+			}else{
+				time.Sleep(time.Microsecond*200)
+			}
+		}
+	case stockType:
+		res := stock.SClien.GetStockData(req)
+		reply = formatStockMsg(res)
 	}
 	if reply == "" {
 		_, _ = msg.ReplyText("@" + groupSender.NickName + "我也不知道[尴尬]" + config.GlobalConfig.MsgSuffix)
@@ -165,6 +190,10 @@ func createGroupReplyContent(to string, request string, content string, msgType 
 		reply = "@" + to + " >> " + request + "当前价格:\n\n$" + content + config.GlobalConfig.MsgSuffix
 	case coinMsgType:
 		reply = "@" + to + ">> 代币" + request + "信息(单位：美元):\n\n" + content + config.GlobalConfig.MsgSuffix
+	case stockType:
+		reply = "@" + to + ">> 股票" + request + "信息:\n\n" + content + config.GlobalConfig.MsgSuffix
+	case stockNewsType:
+		reply = "@" + to + ">> " + request + "热门新闻:\n\n" + content + config.GlobalConfig.MsgSuffix
 	}
 	return reply
 }
@@ -192,6 +221,9 @@ func getGroupReqText(msg *openwechat.Message, msgType int16) string {
 		replaceCoinPrice := "@" + sender.Self().NickName + config.GlobalConfig.CoinPricePrefix
 		replaceCoinMsg := "@" + sender.Self().NickName + config.GlobalConfig.CoinMsgPrefix
 		replaceGas := "@" + sender.Self().NickName + config.GlobalConfig.GasPrefix
+		replaceStock := "@" + sender.Self().NickName + config.GlobalConfig.StockPrefix
+		replaceStockNews := "@" + sender.Self().NickName + config.GlobalConfig.StockNewsPrefix
+
 		content := utils.TrimAllSpace(msg.Content)
 		// content :=strings.TrimSpace(msg.Content)
 		content = strings.Trim(content, "\n") //去除回车
@@ -199,6 +231,8 @@ func getGroupReqText(msg *openwechat.Message, msgType int16) string {
 		textContent = strings.ReplaceAll(content, replaceCoinPrice, "")
 		textContent = strings.ReplaceAll(textContent, replaceCoinMsg, "")
 		textContent = strings.ReplaceAll(textContent, replaceGas, "")
+		textContent = strings.ReplaceAll(textContent, replaceStock, "")
+		textContent = strings.ReplaceAll(textContent, replaceStockNews, "")
 	}
 	return textContent
 }
