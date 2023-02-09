@@ -11,6 +11,10 @@
 
 
 
+<img src="https://raw.githubusercontent.com/selfmakeit/resource/main/image-20230210002700406.png" alt="image-20230210002700406" style="zoom:67%;" />
+
+![image-20230210002733091](https://raw.githubusercontent.com/selfmakeit/resource/main/image-20230210002733091.png)
+
 # 定制建议：
 1. 日志：如果openwechat内部部分的日志保持一致，需要下载openwechat代码到本地进行更改，（或者你可以向那个项目提一个pr我想作者应该是不会拒绝的）。
 2. 如果要扩展其他功能，可自己在config.go文件中自定义消息触发前缀，然后在消息处理的地方(群消息处理和私聊处理)添加消息类型判断。
