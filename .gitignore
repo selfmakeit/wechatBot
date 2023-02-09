@@ -1,3 +1,4 @@
 config/config.json
 storage.json
+test/*
 logs
