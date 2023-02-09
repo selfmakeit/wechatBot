@@ -1,5 +1,0 @@
-[2023/01/23 - 11:35:24.860]	[34minfo[0m	/home/spike/project/myown/WechatBot/handlers/msgGroupHandler.go:89	group:[ Z ] in group [ 👿 ] ask [  /gpt 美国首都是哪里？ ] to gpt
-[2023/01/23 - 11:35:30.730]	[34minfo[0m	/home/spike/project/myown/WechatBot/handlers/msgGroupHandler.go:89	group:[ Z ] in group [ 👿 ] ask [  /gpt 那里有多少人口？ ] to gpt
-[2023/01/23 - 11:35:34.903]	[34minfo[0m	/home/spike/project/myown/WechatBot/handlers/msgGroupHandler.go:89	group:[ Z ] in group [ 👿 ] ask [  /gpt 那里有多少人口？ ] to gpt
-[2023/01/23 - 11:35:53.944]	[34minfo[0m	/home/spike/project/myown/WechatBot/handlers/msgGroupHandler.go:103	group:[ Z ] in group [ 👿 ]  search coin price[symbol: btc name: Bitcoin]
-[2023/01/23 - 11:36:04.096]	[34minfo[0m	/home/spike/project/myown/WechatBot/handlers/msgGroupHandler.go:118	group:[ Z ] in group [ 👿 ]  search coin message[symbol: ethw name: EthereumPoW]

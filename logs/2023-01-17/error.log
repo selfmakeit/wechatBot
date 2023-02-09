@@ -1,7 +1,0 @@
-wechatBot[2023/01/17 - 00:01:17.682]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:50		{"error": "get coin message error: Get \"https://api.coingecko.com/api/v3/coins/markets?ids=matic-network&order=market_cap_desc&page=1&per_page=1&sparkline=false&vs_currency=usd\": read tcp 127.0.0.1:60530->127.0.0.1:7890: read: connection reset by peer"}
-wechatBot[2023/01/17 - 00:10:41.266]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:50		{"error": "get coin price error: id or currency not existed(mapp:map[])"}
-[2023/01/17 - 00:48:48.287]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:50		{"error": "get gpt reply error :<nil>"}
-[2023/01/17 - 23:00:07.764]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:69		{"error": "get coin error: symbol not in the token list,you provided symbol:[atom。]"}
-[2023/01/17 - 23:00:40.053]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:69		{"error": "get coin error: symbol not in the token list,you provided symbol:[artew]"}
-[2023/01/17 - 23:01:28.370]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:69		{"error": "get coin error: symbol not in the token list,you provided symbol:[/coInatom]"}
-[2023/01/17 - 23:03:43.439]	[31merror[0m	/home/spike/project/myown/WechatBot/handlers/msgHandler.go:69		{"error": "get coin error: symbol not in the token list,you provided symbol:[/pRIceatom]"}
