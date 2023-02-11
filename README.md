@@ -1,7 +1,26 @@
 # 微信机器人说明
-1. 接入了gpt-3,利用redis实现了对话上下文缓存，在使用的时候可根据自己的需求更改module/redis/redis.go里的内容。对于gpt3使用的是
-2. 附加了查询虚拟货币实时价格和虚拟币信息的两个接口(基于coingecko接口)，如果有coingecko的apikey可以在配置文件中填写，没有也可以用，只是频率有一定限制。
-3. 日志记录使用了zap，并做了日志文件分割，对于微信信息部分的日志因为是使用的openwechat(https://github.com/eatmoreapple/openwechat) ，没有去改内部的日志处理，需要的可自行定制。
+
+**功能：**
+
+* 接入2chatgpt
+
+* 虚拟币实时价格和信息查询
+
+* 虚拟币watch list价格定时推送
+
+* 股票价格查询
+
+* 股票热门新闻抓取
+
+* web3热门新闻抓取推送
+
+**说明**
+
+1. **关于chatgpt： **接入了gpt-3,利用redis实现了对话上下文缓存，在使用的时候可根据自己的需求更改module/redis/redis.go里的内容。对于gpt3使用的是
+
+2. **关于虚拟币： **如果有coingecko的apikey可以在配置文件中填写，没有也可以用，只是频率有一定限制。
+
+3. **日志：** 日志记录使用了zap，并做了日志文件分割，对于微信信息部分的日志因为是使用的openwechat(https://github.com/eatmoreapple/openwechat) ，没有去改内部的日志处理，需要的可自行定制。
 
 使用截图：
 
