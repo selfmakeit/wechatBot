@@ -71,7 +71,7 @@ func (s *FlashClien) GetFlashNews() *FlashNews {
 	})
 	flashNews :=&FlashNews{
 		News:&allNews,
-		Date:time.Now().Format("2006-01-02"),
+		Date:time.Now().Format("2006-01-02")+"[快讯]",
 	}
 	s.collector.Wait()
 

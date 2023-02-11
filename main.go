@@ -82,7 +82,7 @@ func formatNews(news *FlashNews)string{
 	for i,v := range *news.News{
 		ss := strings.ReplaceAll(v.Summary, "[原文链接]", "")
 		ss = strings.ReplaceAll(ss, "\n", "")
-		msg += strconv.Itoa(i+1)+". "+v.Title+":\n"+"  "+ss+"\n\n"
+		msg += "\n\n"+strconv.Itoa(i+1)+". "+v.Title+":\n"+"  "+ss
 	}
 	return msg
 
