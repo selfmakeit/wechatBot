@@ -2,7 +2,7 @@
 
 **功能：**
 
-* 接入2chatgpt
+* 接入了chatgpt
 
 * 虚拟币实时价格和信息查询
 
@@ -16,7 +16,7 @@
 
 **说明**
 
-1. **关于chatgpt： **接入了gpt-3,利用redis实现了对话上下文缓存，在使用的时候可根据自己的需求更改module/redis/redis.go里的内容。对于gpt3使用的是
+1. **关于chatgpt： **接入了gpt-3,利用redis实现了对话上下文缓存，在使用的时候可根据自己的需求更改module/redis/redis.go里的内容。
 
 2. **关于虚拟币： **如果有coingecko的apikey可以在配置文件中填写，没有也可以用，只是频率有一定限制。
 
